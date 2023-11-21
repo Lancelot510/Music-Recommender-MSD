@@ -3,36 +3,35 @@
     <link rel="stylesheet" href="styles.css">
     <link rel="stylesheet" href="//rawgithub.com/Caged/d3-tip/master/examples/example-styles.css">
     <meta charset="utf-8">
-    <title>Million Song Dataset</title>
+    <title>Music Recommender</title>
 </head>
 
 <body>
   <script type="text/javascript" src="../lib/d3.v5.min.js"></script>
   <script type="text/javascript" src="../lib/d3-tip.min.js"></script>
+  <script type="text/javascript" src='../lib/plotly-2.27.0.min.js'></script>
   <script type="text/javascript" src="main.js"></script>
 
-<div>
-  <link href="./home.css" rel="stylesheet" />
-  <div class="home-container">
-    <header data-role="Header" class="home-header">
-      <h1 class="home-text">Music Recommender</h1>
-      <div class="home-nav">
-        <nav class="navigation-links-nav navigation-links-root-class-name15">
-          <a href="index.html" class="navigation-links-navlink">
-            <span>Recommender</span>
-          </a>
-          <a href="insights.html" class="navigation-links-navlink1">
-            <span>Insights</span>
-          </a>
-        </nav>
-      </div>
-      
-    </header>
-
+  <div>
+    <link href="./home.css" rel="stylesheet" />
+    <div class="home-container">
+      <header data-role="Header" class="home-header">
+        <h1 class="home-text">Music Recommender</h1>
+        <div class="home-nav">
+          <nav class="navigation-links-nav navigation-links-root-class-name15">
+            <a href="index.html" class="navigation-links-navlink">
+              <span>Recommender</span>
+            </a>
+            <a href="insights.html" class="navigation-links-navlink1">
+              <span>Insights</span>
+            </a>
+          </nav>
+        </div>
+      </header>
+    </div>
   </div>
-</div>
 
-<label>Search a user:</label>
+<label>Select a user:</label>
 <select class="select_artists" id="artists"></select>
 <button id = "search">Search</button>
 
@@ -52,3 +51,4 @@
 </div>
 
 </body>
+</html>
