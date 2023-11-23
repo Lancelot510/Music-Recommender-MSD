@@ -3,6 +3,8 @@
     <link rel="stylesheet" href="styles.css">
     <link rel="stylesheet" href="//rawgithub.com/Caged/d3-tip/master/examples/example-styles.css">
     <script src='https://cdn.plot.ly/plotly-2.27.0.min.js'></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.0/papaparse.min.js"></script>
+
     <meta charset="utf-8">
     <title>Music Recommender</title>
 </head>
@@ -10,8 +12,9 @@
 <body>
   <script type="text/javascript" src="../lib/d3.v5.min.js"></script>
   <script type="text/javascript" src="../lib/d3-tip.min.js"></script>
-  <script type="text/javascript" src='../lib/plotly-2.27.0.min.js'></script>
+  <script type="text/javascript" src='../lib/plotly.min.js'></script>
   <script type="text/javascript" src="insights.js"></script>
+  
 
 <div>
   <link href="./home.css" rel="stylesheet" />
@@ -33,7 +36,13 @@
 
 
   </div>
-</div>
+
+  <div id="your-plot-container"></div>
+  <label>Select a year:</label>
+  <select id="year-dropdown"></select>
+
+  <div id='scatter'><!-- Plotly chart will be drawn inside this DIV --></div>
+
 </body>
 </html>
 
