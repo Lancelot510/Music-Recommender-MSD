@@ -121,7 +121,7 @@
 
 
 
-  Plotly.d3.csv('data/insights.csv', function (err, data) {
+  Plotly.d3.csv('data/genreevolution.csv', function (err, data) {
 
     var lookup = {};
     function getData(year, genre) {
