@@ -31,7 +31,7 @@
       var title = values[20];  // Replace with the correct index for 'title'
       var genre = values[2];  // Replace with the correct index for 'genre'
       var year = parseInt(values[53]);  // Replace with the correct index for 'year'
-      console.log(year, genre)
+    //   console.log(year, genre)
 
       if (genre !== undefined) {
         data.push({ tempo, loudness, title, genre, year });
@@ -119,3 +119,143 @@
   }
 
 
+
+
+  Plotly.d3.csv('data/genreevolution.csv', function (err, data) {
+
+    var lookup = {};
+    function getData(year, genre) {
+        var byYear, trace;
+        if (!(byYear = lookup[year])) {;
+        byYear = lookup[year] = {};
+        }
+
+        if (!(trace = byYear[genre])) {
+        trace = byYear[genre] = {
+            x: [],
+            y: [],
+            id: [],
+            text: [],
+            marker: {size: []}
+        };
+        }
+        return trace;
+    }
+
+    for (var i = 0; i < data.length; i++) {
+        var datum = data[i];
+        var trace = getData(datum.year, datum.genre);
+        trace.text.push("Song Count: "+datum.count+"<br>"+"Genre: "+datum.genre);
+        trace.id.push(datum.genre);
+        trace.x.push(datum.duration);
+        trace.y.push(datum.song_hotttnesss);
+        trace.marker.size.push(datum.count);
+    }
+
+    var years = Object.keys(lookup);
+    var refyear = lookup[years[70]];
+    var genres = Object.keys(refyear);
+
+    var traces = [];
+    for (i = 0; i < genres.length; i++) {
+        var data = refyear[genres[i]];
+
+        traces.push({
+        name: genres[i],
+        x: data.x.slice(),
+        y: data.y.slice(),
+        id: data.id.slice(),
+        text: data.text.slice(),
+        mode: 'markers',
+        marker: {
+            size: data.marker.size.slice(),
+            sizemode: 'area',
+            sizeref: 0.1
+        }
+        });
+    }
+
+    var frames = [];
+    for (i = 0; i < years.length; i++) {
+        frames.push({
+        name: years[i],
+        data: genres.map(function (genre) {
+            return getData(years[i], genre);
+        })
+        })
+    }
+
+    var sliderSteps = [];
+    for (i = 0; i < years.length; i++) {
+        sliderSteps.push({
+        method: 'animate',
+        label: years[i],
+        args: [[years[i]], {
+            mode: 'immediate',
+            transition: {duration: 300},
+            frame: {duration: 300, redraw: false},
+        }]
+        });
+    }
+    
+    var layout = {
+        title: 'Genre Evolution over time',
+        xaxis: {
+        title: 'Average Duration of songs (in seconds)',
+        range: [0, 500]
+        },
+        yaxis: {
+        title: 'Song Hotness (Normalized 0-1)',
+        range: [0,1]
+        },
+        hovermode: 'closest',
+        height: 600,
+        updatemenus: [{
+        x: 0,
+        y: 0,
+        yanchor: 'top',
+        xanchor: 'left',
+        showactive: false,
+        direction: 'left',
+        type: 'buttons',
+        pad: {t: 87, r: 10},
+        buttons: [{
+            method: 'animate',
+            args: [null, {
+            mode: 'immediate',
+            fromcurrent: true,
+            transition: {duration: 300},
+            frame: {duration: 500, redraw: false}
+            }],
+            label: 'Play'
+        }, {
+            method: 'animate',
+            args: [[null], {
+            mode: 'immediate',
+            transition: {duration: 0},
+            frame: {duration: 0, redraw: false}
+            }],
+            label: 'Pause'
+        }]
+        }],
+
+        sliders: [{
+        pad: {l: 130, t: 55},
+        currentvalue: {
+            visible: true,
+            prefix: 'Year:',
+            xanchor: 'right',
+            font: {size: 20, color: '#666'}
+        },
+        steps: sliderSteps
+        }]
+    };
+
+
+    Plotly.plot('myDiv', {
+        data: traces,
+        layout: layout,
+    config: {showSendToCloud:true},
+        frames: frames,
+    });
+    });
