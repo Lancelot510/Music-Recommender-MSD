@@ -43,7 +43,7 @@ Promise.all([
     d3.dsv(",", nodes_csv, (node) => {
         return {
             song_id: node.song_id,
-            song_name: node.song_id,
+            song_name: node.title,
             // avg_duration: parseFloat(node.avg_duration),
             // avg_familiarity: parseFloat(node.avg_familiarity),
             song_hotness: isNaN(parseFloat(node.song_hotttnesss)) ? 0 : parseFloat(node.song_hotttnesss), //isNaN(parseFloat(row[columnIndex])) ? 0 : parseFloat(row[columnIndex])
@@ -76,7 +76,7 @@ Promise.all([
         .attr("id", "recommendations-div")
     // Show initial network of song based on selected song (How many neighbors to show in the beginning?)
     selectedSong = nodes[152799];
-    sliderValue = 7;
+    sliderValue = 5;
 
     fetchGraphData(selectedSong);
     graphDataMap = buildGraphDataMap({});
@@ -100,12 +100,12 @@ Promise.all([
         .text(function (d) {
             return d.song_id
         });
-
+    /*
     search.addEventListener("click", function () {
         console.log("doc event", document);
         var e = document.getElementById("user");
         console.log("e event", e);
-        var text = e.options[e.selectedIndex];
+        var text = e.options[e.selectedIndex].text;
         console.log("text event", text);
         selectedSong = allNodesMap[text.id];
         console.log("ss event", selectedSong);
@@ -115,6 +115,17 @@ Promise.all([
         graphDataMap = buildGraphDataMap({});
         drawGraph();
     })
+    */
+    document.getElementById("search").addEventListener("click", function () {
+        var e = document.getElementById("user");
+        var text = e.options[e.selectedIndex].text;
+        selectedSong = allNodesMap[text]; // Fix: Use text directly as the key
+        recommendations = [];
+        clearGraph();
+        fetchGraphData(selectedSong);
+        graphDataMap = buildGraphDataMap({});
+        drawGraph();
+    });
 
     // Display initial nodes of top songs to select from
 
@@ -149,6 +160,7 @@ Promise.all([
         });
 
     //   Slider 
+    /*
     slider.addEventListener("input", function () {
         sliderValue = this.value;
         recommendations = [];
@@ -157,6 +169,16 @@ Promise.all([
         graphDataMap = buildGraphDataMap({});
         drawGraph();
         // displayRecommendations();
+    });
+    */
+    document.getElementById("similar_count_slider").addEventListener("input", function () {
+        sliderValue = this.value;
+        document.getElementById("slider-value").innerText = sliderValue; 
+        recommendations = [];
+        clearGraph();
+        fetchGraphData(selectedSong);
+        graphDataMap = buildGraphDataMap({});
+        drawGraph();
     });
 
 
@@ -475,3 +497,4 @@ function update(d) {
         // displayRecommendations();
     }
 }
+
