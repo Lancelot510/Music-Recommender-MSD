@@ -1,16 +1,17 @@
 <!DOCTYPE html>
+
 <head>
-    <link rel="stylesheet" href="home.css">
-    <link rel="stylesheet" href="//rawgithub.com/Caged/d3-tip/master/examples/example-styles.css">
-    <meta charset="utf-8">
-    <title>Music Recommender</title>
+  <link rel="stylesheet" href="home.css">
+  <link rel="stylesheet" href="//rawgithub.com/Caged/d3-tip/master/examples/example-styles.css">
+  <meta charset="utf-8">
+  <title>Music Recommender</title>
 </head>
 
 <body>
   <script type="text/javascript" src="../lib/d3.v5.min.js"></script>
   <script type="text/javascript" src="../lib/d3-tip.min.js"></script>
   <script type="text/javascript" src='../lib/plotly-2.27.0.min.js'></script>
-  <script type="text/javascript" src="main_artist.js"></script>
+  <script type="text/javascript" src="main_v1.js"></script>
 
   <div>
     <link href="./home.css" rel="stylesheet" />
@@ -33,22 +34,23 @@
 
   <label>Select a user:</label>
   <select class="select_user" id="user"></select>
-  <button id = "search">Search</button>
-  
+  <button id="search">Search</button>
+
   <br><br>
   <div id="top_songs">Select from any of the top songs:
-  <br><br>
+    <br><br>
   </div>
   <br><br>
-  
+
   <div class="slider-container">
-  <div class="slider-text">Number of similar songs</div>
-  <div>
+    <div class="slider-text">Number of similar songs</div>
+    <div>
       <input type="range" min="1" max="25" value="5" class="slider" id="similar_count_slider">
       <span class="slider-label slider-min">1</span>
       <span class="slider-label slider-max">25</span>
-</div>
-</div>
+    </div>
+  </div>
 
 </body>
+
 </html>

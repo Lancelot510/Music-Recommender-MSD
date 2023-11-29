@@ -4,11 +4,20 @@ var nodes_csv = 'data/updated_file.csv';
 // SVG Dimensions
 var width = 1080;
 var height = 720;
-var margins = { left: 50, right: 50, top: 50, bottom: 50 };
+var margins = {
+    left: 50,
+    right: 50,
+    top: 50,
+    bottom: 50
+};
 var networkGraphWidth = width - margins.left - margins.right;
 var networkGraphHeight = height - margins.top - margins.bottom;
 var radiusScale = d3.scaleLinear().range([5, 25]);
-const colors = { 'SELECTED': '#E0538F', 'DEFAULT': '#2E64A2', 'EXPANDED': '#95D134'};
+const colors = {
+    'SELECTED': '#E0538F',
+    'DEFAULT': '#2E64A2',
+    'EXPANDED': '#95D134'
+};
 var nodes, edges, allNodesMap, songEdges;
 var sliderValue;
 var graphData, graph, selectedSong, graphDataMap, recommendationsDiv;
@@ -26,7 +35,7 @@ console.log(search);
 Promise.all([
     d3.dsv(",", recommendations_csv, function (ssr) {
         return {
-            source: ssr.source_song_id,
+            source: ssr.source_id,
             target: ssr.target_song_id,
             rank: parseInt(ssr.rank)
         };
@@ -37,7 +46,7 @@ Promise.all([
             song_name: node.song_id,
             // avg_duration: parseFloat(node.avg_duration),
             // avg_familiarity: parseFloat(node.avg_familiarity),
-            song_hotness: isNaN(parseFloat(node.song_hotttnesss)) ? 0 : parseFloat(node.song_hotttnesss),  //isNaN(parseFloat(row[columnIndex])) ? 0 : parseFloat(row[columnIndex])
+            song_hotness: isNaN(parseFloat(node.song_hotttnesss)) ? 0 : parseFloat(node.song_hotttnesss), //isNaN(parseFloat(row[columnIndex])) ? 0 : parseFloat(row[columnIndex])
             // total_tracks: parseInt(node.total_tracks)
         };
     })
@@ -51,7 +60,7 @@ Promise.all([
         return obj;
     }, {}); // map for quick lookup of nodes by id
 
-    radiusScale.domain([5,25]);
+    radiusScale.domain([5, 25]);
 
     var svg = d3.select("body").append("svg")
         .attr("width", width)
@@ -63,8 +72,8 @@ Promise.all([
         .attr("transform", "translate( " + margins.left + ", " + margins.top + ")");
 
     recommendationsDiv = d3.select("body")
-                           .append("div")
-                           .attr("id", "recommendations-div")
+        .append("div")
+        .attr("id", "recommendations-div")
     // Show initial network of song based on selected song (How many neighbors to show in the beginning?)
     selectedSong = nodes[152799];
     sliderValue = 7;
@@ -205,10 +214,10 @@ function fetchGraphData(selectedSong) {
  */
 function getTooltipStats(hoveredNode) {
     return "Song Name: " + hoveredNode['song_name'];
-        // "<br> Average Duration: " + parseFloat(hoveredNode['avg_duration']).toFixed(2) +
-        // "<br> Average Hotness: " + parseFloat(hoveredNode['avg_hotness']).toFixed(2) +
-        // "<br> Average Familiarity: " + parseFloat(hoveredNode['avg_familiarity']).toFixed(2) +
-        // "<br> Total Tracks: " + hoveredNode['total_tracks'];
+    // "<br> Average Duration: " + parseFloat(hoveredNode['avg_duration']).toFixed(2) +
+    // "<br> Average Hotness: " + parseFloat(hoveredNode['avg_hotness']).toFixed(2) +
+    // "<br> Average Familiarity: " + parseFloat(hoveredNode['avg_familiarity']).toFixed(2) +
+    // "<br> Total Tracks: " + hoveredNode['total_tracks'];
 }
 
 /**
@@ -221,8 +230,8 @@ function getSongNetwork(song_id, count = 9) {
 
     //create a deep copy of the edges because forceSimulation modifies these edges
     let neighbors = JSON.parse(JSON.stringify(filtered))
-    .sort((edge1, edge2) => edge1['rank'] - edge2['rank'])
-    .slice(0, count);
+        .sort((edge1, edge2) => edge1['rank'] - edge2['rank'])
+        .slice(0, count);
     return neighbors;
 }
 
@@ -261,12 +270,9 @@ function clearGraph() {
  * Function to plot the nodes, add force simulation, path, etc
  */
 function drawGraph() {
-
-   
-
-  // Set the colors for the links and circles for the top nodes
-  var topLinkColor = "yellow";
-  var topCircleColor = "orange";
+    // Set the colors for the links and circles for the top nodes
+    var topLinkColor = "yellow";
+    var topCircleColor = "orange";
 
 
     if (force != null)
@@ -281,33 +287,47 @@ function drawGraph() {
         .alphaTarget(0.1)
         .on("tick", tick);
 
-   /*  path = graph.append("g")
+    /*  path = graph.append("g")
+         .selectAll("path")
+         .data(songEdges)
+         .enter()
+         .append("path") */
+    var nodes = force.nodes();
+    var topNodes = nodes.sort((a, b) => b.song_hotnesss - a.song_hotnesss).slice(0, 5);
+
+    path = graph.append("g")
         .selectAll("path")
         .data(songEdges)
         .enter()
-        .append("path") */
-        var nodes = force.nodes();
-        var topNodes = nodes.sort((a, b) => b.song_hotnesss - a.song_hotnesss).slice(0, 5);
-        
-   path = graph.append("g")
-          .selectAll("path")
-          .data(songEdges)
-          .enter()
-          .append("path")
-          .attr("class", (d) => {
+        .append("path")
+        .attr("class", (d) => {
             if (topNodes.includes(d.source) && topNodes.includes(d.target)) {
-                  return "top-link"; // add a class for top nodes
-              } else {
-                  return "default-link"; // add a class for all other nodes
-              }
-          })
-          .attr("stroke-width", (d) => {
-              if (topNodes.includes(d.source) && topNodes.includes(d.target)) {
-                  return 4; // set a larger stroke width for paths connecting two top nodes
-              } else {
-                  return 2; // set the default stroke width for all other paths
-              }
-          });
+                return "top-link"; // add a class for top nodes
+            } else {
+                return "default-link"; // add a class for all other nodes
+            }
+        })
+        // .attr("stroke-width", (d) => {
+        //     if (topNodes.includes(d.source) && topNodes.includes(d.target)) {
+        //         return 4; // set a larger stroke width for paths connecting two top nodes
+        //     } else {
+        //         return 2; // set the default stroke width for all other paths
+        //     }
+        // })
+        .attr("fill", (d) => {
+            if (topNodes.includes(d.source) && topNodes.includes(d.target)) {
+                return "none"; // set a larger stroke width for paths connecting two top nodes
+            } else {
+                return "none"; // set the default stroke width for all other paths
+            }
+        })
+        .attr("stroke", (d) => {
+            if (topNodes.includes(d.source) && topNodes.includes(d.target)) {
+                return "#666"; // set a larger stroke width for paths connecting two top nodes
+            } else {
+                return "#666"; // set the default stroke width for all other paths
+            }
+        });
 
     node = graph.selectAll(".node")
         .data(force.nodes())
@@ -317,22 +337,22 @@ function drawGraph() {
         .on('mouseover', tip.show)
         .on('mouseout', tip.hide);
 
-   /*  node.append("circle")
+    /*  node.append("circle")
+         .attr("id", function (d) {
+             return d.id;
+         })
+         .attr("r", function (d) {
+             return radiusScale(d['total_tracks']);
+         })
+         .attr("fill", (d) => {
+             if (d['artist_id'] == selectedArtist['artist_id']) return colors.SELECTED;
+             else if (d['children'] != null) return colors.EXPANDED;
+             return colors.DEFAULT;
+         }) */
+
+    node.append("circle")
         .attr("id", function (d) {
             return d.id;
-        })
-        .attr("r", function (d) {
-            return radiusScale(d['total_tracks']);
-        })
-        .attr("fill", (d) => {
-            if (d['artist_id'] == selectedArtist['artist_id']) return colors.SELECTED;
-            else if (d['children'] != null) return colors.EXPANDED;
-            return colors.DEFAULT;
-        }) */
-
-        node.append("circle")
-        .attr("id", function(d) {
-          return d.id;
         })
         /*
         .attr("r", function(d) {
@@ -341,15 +361,15 @@ function drawGraph() {
         */
         .attr("r", 5)
         .attr("fill", (d) => {
-          if (topNodes.includes(d)) {
-            return topCircleColor;
-          } else if (d['song_id'] == selectedSong['song_id']) {
-            return colors.SELECTED;
-          } else if (d['children'] != null) {
-            return colors.EXPANDED;
-          } else {
-            return colors.DEFAULT;
-          }
+            if (topNodes.includes(d)) {
+                return topCircleColor;
+            } else if (d['song_id'] == selectedSong['song_id']) {
+                return colors.SELECTED;
+            } else if (d['children'] != null) {
+                return colors.EXPANDED;
+            } else {
+                return colors.DEFAULT;
+            }
         });
 
 
@@ -434,8 +454,7 @@ function update(d) {
         clearGraph();
         drawGraph();
         // displayRecommendations();
-    }
-    else {
+    } else {
         // get data of similar artists
         expandedSongs.push(d);
         console.log("update_1", expandedSongs, d);

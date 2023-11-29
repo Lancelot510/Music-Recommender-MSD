@@ -16,7 +16,17 @@
   text-decoration: none;
 }
 
+.default-link {
+  fill: none;
+  stroke: #f50000;
+  stroke-width: 6px;
+}
 
+.top-link {
+  fill: none;
+  stroke: #666;
+  stroke-width: 1.5px;
+}
 
 
 
