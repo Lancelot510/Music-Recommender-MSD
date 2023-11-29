@@ -119,7 +119,7 @@
   }
 
 
-    //======================================================================================
+//==============================================================================================================
 
   Plotly.d3.csv('data/genreevolution.csv', function (err, data) {
 
@@ -250,6 +250,8 @@
         steps: sliderSteps
         }]
     };
+    
+  
 
 
     Plotly.plot('myDiv', {
@@ -259,6 +261,218 @@
         frames: frames,
     });
     });
+
+    //=================================================================================================
+
+    fetch('webapp/data/song_genre_year.csv')
+    .then(response => response.text())
+    .then(data => {
+      // Process the CSV data
+      processData(data);
+    });
+
+
+    // Process the CSV data
+    function processData(csvData) {
+        // Split the CSV data into rows
+        var rows = csvData.split('\n');
+
+        // Extract headers from the first row
+        var headers = rows[0].split(',');
+
+        // Initialize arrays to store data
+        var data = [];
+        var genreSet = new Set();
+
+        // Iterate through rows starting from the second row (index 1)
+        for (var i = 1; i < rows.length; i++) {
+          var values = rows[i].split(',');
+          //console.log(values);
+          // Assuming 'tempo', 'loudness', 'title', 'genre', and 'year' are columns in your CSV
+          var genre = values[2];  // Replace with the correct index for 'genre'
+          var year = parseInt(values[53]);  // Replace with the correct index for 'year'
+          //console.log(year, genre);
+
+          if (genre !== undefined) {
+            data.push({genre, year });
+            genreSet.add(genre);
+          }
+        }
+        //console.log(genreSet)
+        
+
+        // Convert genre set to an array
+        var uniqueGenres = Array.from(genreSet);
+        console.log(uniqueGenres);
+        // Use D3 color scale for the genres
+        
+        var colorScale = d3.scaleOrdinal()
+          .domain(uniqueGenres) // Set the domain to unique genres
+          .range(d3.schemeCategory10); // Use a color scheme for the range (adjust as needed)
+        // Create an array to store traces for each year and genre
+        var traces = [];
+
+        // Iterate over unique years
+        var uniqueYears = Array.from(new Set(data.map(row => row.year))); // Extract unique years from the data
+        
+        uniqueYears.forEach(year => {
+          var filteredData = data.filter(row => row.year === year);
+
+          var sortedGenres = uniqueGenres.slice().sort((a, b) => {
+            var songsA = filteredData.filter(row => row.genre === a).length;
+            var songsB = filteredData.filter(row => row.genre === b).length;
+            return songsB - songsA;
+          });
+
+          // Create traces for each genre in the current year
+          var yearTraces = sortedGenres.map(genre => {
+            var genreData = filteredData.filter(row => row.genre === genre);
+            genreData.sort((a, b) => b.numberOfSongs - a.numberOfSongs);
+
+            return {
+              x: [year],
+              y: [genreData.length],
+              type: 'bar',
+              name: genre,
+              marker: {
+                color: colorScale(genre),
+              },
+            };
+          });
+          
+          traces.push(...yearTraces);
+        });
+
+        var layout = {
+          barmode: 'stack',
+          title: 'Genre distribution through the years',
+          xaxis: {
+            title: 'Year',
+            tickvals: uniqueYears, // Set the x-axis ticks to unique years
+            tickmode: 'array', // Specify the tick mode as an array
+          },
+          yaxis: { title: 'Number of songs' },
+          showlegend: true,
+          legend: {
+            x: 1,
+            y: 1,
+            font: {
+              family: 'Arial, sans-serif',
+              size: 16,
+              color: 'grey',
+            },
+          },
+        };
+
+    // Update the plot with the new traces and layout
+    Plotly.newPlot('stackedbar', traces, layout);
+    }
+
+    //=================================================================================================
+
+    fetch('webapp/data/song_genre_year.csv')
+    .then(response => response.text())
+    .then(data => {
+      // Process the CSV data
+      processData(data);
+    });
+
+
+    // Process the CSV data
+    function processData(csvData) {
+        // Split the CSV data into rows
+        var rows = csvData.split('\n');
+
+        // Extract headers from the first row
+        var headers = rows[0].split(',');
+
+        // Initialize arrays to store data
+        var data = [];
+        var genreSet = new Set();
+
+        // Iterate through rows starting from the second row (index 1)
+        for (var i = 1; i < rows.length; i++) {
+          var values = rows[i].split(',');
+          //console.log(values);
+          // Assuming 'tempo', 'loudness', 'title', 'genre', and 'year' are columns in your CSV
+          var genre = values[2];  // Replace with the correct index for 'genre'
+          var year = parseInt(values[53]);  // Replace with the correct index for 'year'
+          //console.log(year, genre);
+
+          if (genre !== undefined) {
+            data.push({genre, year });
+            genreSet.add(genre);
+          }
+        }
+        //console.log(genreSet)
+        
+
+        // Convert genre set to an array
+        var uniqueGenres = Array.from(genreSet);
+        console.log(uniqueGenres);
+        // Use D3 color scale for the genres
+        
+        var colorScale = d3.scaleOrdinal()
+          .domain(uniqueGenres) // Set the domain to unique genres
+          .range(d3.schemeCategory10); // Use a color scheme for the range (adjust as needed)
+        // Create an array to store traces for each year and genre
+        var traces = [];
+
+        // Iterate over unique years
+        var uniqueYears = Array.from(new Set(data.map(row => row.year))); // Extract unique years from the data
+        
+        uniqueYears.forEach(year => {
+          var filteredData = data.filter(row => row.year === year);
+
+          var sortedGenres = uniqueGenres.slice().sort((a, b) => {
+            var songsA = filteredData.filter(row => row.genre === a).length;
+            var songsB = filteredData.filter(row => row.genre === b).length;
+            return songsB - songsA;
+          });
+
+          // Create traces for each genre in the current year
+          var yearTraces = sortedGenres.map(genre => {
+            var genreData = filteredData.filter(row => row.genre === genre);
+            genreData.sort((a, b) => b.numberOfSongs - a.numberOfSongs);
+
+            return {
+              x: [year],
+              y: [genreData.length],
+              type: 'bar',
+              name: genre,
+              marker: {
+                color: colorScale(genre),
+              },
+            };
+          });
+          
+          traces.push(...yearTraces);
+        });
+
+        var layout = {
+          barmode: 'stack',
+          title: 'Genre distribution through the years',
+          xaxis: {
+            title: 'Year',
+            tickvals: uniqueYears, // Set the x-axis ticks to unique years
+            tickmode: 'array', // Specify the tick mode as an array
+          },
+          yaxis: { title: 'Number of songs' },
+          showlegend: true,
+          legend: {
+            x: 1,
+            y: 1,
+            font: {
+              family: 'Arial, sans-serif',
+              size: 16,
+              color: 'grey',
+            },
+          },
+        };
+
+    // Update the plot with the new traces and layout
+    Plotly.newPlot('stackedbar', traces, layout);
+    }
 
 
     fetch('data/songs_details.csv')
