@@ -1,0 +1,108 @@
+<head>
+  <!-- Plotly.js -->
+  <script src="lib\plotly-2.27.0.min.js"></script>
+
+</head>
+
+<body>
+  <div id="myDiv"><!-- Plotly chart will be drawn inside this DIV --></div>
+  <script type="text/javascript" src="webapp/lib/d3.v5.min.js"></script>
+  <script type="text/javascript" src="webapp/lib/d3-tip.min.js"></script>
+  <script type="text/javascript" src='webapp/lib/plotly.min.js'></script>
+  <script>
+    <!-- JAVASCRIPT CODE GOES HERE -->
+    //Fetching the csv file
+  fetch('webapp/data/song_genre_year1.csv')
+      .then(response => response.text())
+      .then(data => {
+        // Process the CSV data
+        processData(data);
+      });
+
+  // Process the CSV data
+  function processData(csvData) {
+      // Split the CSV data into rows
+      var rows = csvData.split('\n');
+
+      // Extract headers from the first row
+      var headers = rows[0].split(',');
+
+      // Initialize arrays to store data
+      var data = [];
+      var genreSet = new Set();
+
+      // Iterate through rows starting from the second row (index 1)
+      for (var i = 1; i < rows.length; i++) {
+        var values = rows[i].split(',');
+
+        // Assuming 'tempo', 'loudness', 'title', 'genre', and 'year' are columns in your CSV
+      //   console.log(tempo)
+        var loudness = parseFloat(values[45]);  // Replace with the correct index for 'loudness'
+        var title = values[14];  // Replace with the correct index for 'title'
+        //console.log(title)
+        var genre = values[2];  // Replace with the correct index for 'genre'
+        var year = parseInt(values[25]);  // Replace with the correct index for 'year'
+        //console.log(year, genre)
+
+        if (genre !== undefined) {
+          data.push({title, genre, year });
+          genreSet.add(genre);
+        }
+      }
+      //console.log(genreSet)
+
+      // Convert genre set to an array
+      var uniqueGenres = Array.from(genreSet);
+
+      // Use D3 color scale for the genres
+      var colorScale = d3.scaleOrdinal(d3.schemeCategory20c); // You can choose a different D3 color scheme
+
+      
+      // Function to update the chart based on the selected year
+      function updateChart(selectedYear) {
+        // Filter data for the selected year
+        var filteredData = data.filter(row => row.year == selectedYear);
+
+        // Create an array to store traces for each genre
+        var traces = [];
+
+        // Iterate over unique genres and create a trace for each
+        
+        uniqueGenres.forEach(genre => {
+          var genreData = filteredData.filter(row => row.genre === genre);
+
+          var trace = {
+            x: genreData.map(row => row.selectedYear),
+            y: genreData.map(row => row.genreData),
+            type: 'bar',
+            name: genre, // This sets the legend label
+          };
+
+          traces.push(trace);
+        });
+        
+
+        var layout = {
+          barmode: 'stack',
+          title: 'Genres through the years',
+          xaxis: { title: 'Year' },
+          yaxis: { title: 'Number of songs' },
+          showlegend: true, // Display the legend
+          legend: {
+              x: 1,  // Adjust the x position of the legend
+              y: 1,  // Adjust the y position of the legend
+              font: {
+                family: 'Arial, sans-serif',
+                size: 16,  // Adjust the size of the legend text
+                color: 'grey',
+              }
+            },
+        };
+        
+      // Update the plot with the new traces
+      Plotly.newPlot('myDiv', traces, layout);
+      }
+    }
+
+  </script>
+</body>
