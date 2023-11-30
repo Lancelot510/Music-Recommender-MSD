@@ -401,6 +401,7 @@
 
       // Fetch the CSV file
       fetch('data/songs_details.csv')
+
         .then(response => response.text())
         .then(csvData => {
           const artists = new Set();
@@ -434,6 +435,7 @@
               title: `Average Artist Hotness for ${selectedArtist}`,
               xaxis: { title: 'Year' },
               yaxis: { title: 'Average Hotness', range: [0.0,1.0]  },
+
             };
 
             const data = [trace];
@@ -452,9 +454,10 @@
           };
 
           const layout = {
+
             title: `Average Artist Hotness for ${firstArtist}`,
             xaxis: { title: 'Year'},
-            yaxis: { title: 'Average Hotness', range: [0.0,1.0] },
+            yaxis: { title: 'Average Hotness', range: [0.0,1.0] }
 
           };
 
