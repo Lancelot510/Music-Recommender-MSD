@@ -8,9 +8,15 @@
   <script type="text/javascript" src="webapp/lib/d3.v5.min.js"></script>
   <script type="text/javascript" src="webapp/lib/d3-tip.min.js"></script>
   <script type="text/javascript" src='webapp/lib/plotly.min.js'></script>
+  
+  <div>
+    <label for="artistDropdown">Select an artist:</label>
+    <select id="artistDropdown"></select>
+  </div> 
+  <div id="linechart"><!-- Plotly chart will be drawn inside this DIV --></div>
   <script>
     // Function to process the CSV data
-    function processData(csvData, selectedArtist) {
+    function processData2(csvData, selectedArtist) {
       const rows = csvData.split('\n');
       const hotnessByYear = {};
 
@@ -59,7 +65,7 @@
 
         artistDropdown.addEventListener('change', function () {
           const selectedArtist = this.value;
-          const processedData = processData(csvData, selectedArtist);
+          const processedData = processData2(csvData, selectedArtist);
 
           const trace = {
             x: processedData.map(item => item.year),
@@ -80,7 +86,7 @@
         });
 
         const firstArtist = artistDropdown.options[0].value;
-        const initialData = processData(csvData, firstArtist);
+        const initialData = processData2(csvData, firstArtist);
 
         const trace = {
           x: initialData.map(item => item.year),
