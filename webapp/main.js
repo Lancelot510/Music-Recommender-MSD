@@ -454,7 +454,7 @@ function drawGraph() {
           return radiusScale(d.song_hotness);
         })
         */
-        .attr("r", 5)
+        .attr("r", 8)
         .attr("fill", (d) => {
             if (topNodes.includes(d)) {
                 return topCircleColor;
