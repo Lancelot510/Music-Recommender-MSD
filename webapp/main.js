@@ -1,6 +1,7 @@
 var song_similarity_csv = 'data/song_similarity_recommendations_500k.csv';
 var user_recommendations_csv = 'data/user_song_recommendations_500k.csv';
 var nodes_csv = 'data/updated_file.csv';
+var user_top_played_csv='data/user_top_played_songs.csv';
 
 // SVG Dimensions
 var width = 1080;
@@ -19,7 +20,7 @@ const colors = {
     'DEFAULT': '#2E64A2',
     'EXPANDED': '#95D134'
 };
-var nodes, edges, edges1, edges2, allNodesMap, songEdges;
+var nodes, edges, edges1, edges2, user_topsongs,allNodesMap, songEdges;
 var sliderValue;
 var graphData, graph, selectedSong, graphDataMap, recommendationsDiv;
 var recommendations = [];
@@ -31,7 +32,7 @@ const slider = document.getElementById("similar_count_slider");
 let tip = d3.tip().attr('class', 'd3-tip').attr("id", "tooltip");
 
 const search = document.getElementById("search");
-console.log(search);
+//console.log(search);
 
 Promise.all([
     d3.dsv(",", song_similarity_csv, function (ssr) {
@@ -57,12 +58,21 @@ Promise.all([
             song_hotness: isNaN(parseFloat(node.song_hotttnesss)) ? 0 : parseFloat(node.song_hotttnesss), //isNaN(parseFloat(row[columnIndex])) ? 0 : parseFloat(row[columnIndex])
             // total_tracks: parseInt(node.total_tracks)
         };
+    }),
+    d3.dsv(",", user_top_played_csv, function (utp) {
+        return {
+            user_id: utp.user_id,
+            song_id: utp.song_id,
+            song_name: utp.title,
+            listen_count: parseInt(utp.listen_count)
+        };
     })
 ]).then(allData => {
     edges1 = allData[0]; // all edges data from csv file
     edges2 = allData[1]; // all edges data from csv file
     nodes = allData[2]; // all node data from the csv file
-
+    user_topsongs=allData[3]; //user top song data
+    //console.log(user_topsongs)
     edges = edges1.concat(edges2);
 
     allNodesMap = nodes.reduce((obj, item, idx) => {
@@ -137,6 +147,8 @@ Promise.all([
         fetchGraphData(selectedSong);
         graphDataMap = buildGraphDataMap({});
         drawGraph();
+
+        displayTopSongs(text);
     });
 
     // Display initial nodes of top songs to select from
@@ -508,4 +520,30 @@ function update(d) {
         drawGraph();
         // displayRecommendations();
     }
+}
+
+
+//function to display top songs
+function displayTopSongs(selectedUser) {
+    // Filter user's top songs based on selectedUser
+    var userTopSongs = user_topsongs.filter(function (song) {
+        return song.user_id === selectedUser;
+    });
+
+    // Sort the user's top songs by listen count (descending order)
+    userTopSongs.sort(function (a, b) {
+        return b.listen_count - a.listen_count;
+    });
+
+    // Display top songs and their listen counts
+    var topSongsList = document.getElementById("topSongsList"); // Assuming there's an element to display the list
+    topSongsList.innerHTML = ""; // Clear previous content
+
+    userTopSongs.forEach(function (song) {
+        var listItem = document.createElement("li");
+        listItem.textContent = song.song_name + " : Played " + song.listen_count + " times";
+        topSongsList.appendChild(listItem);
+    });
+
+    topSongsList.style.textAlign = "center";
 }

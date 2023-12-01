@@ -256,3 +256,13 @@ label {
 #search:hover {
   background-color: #45a049;
 }
+
+
+#topSongsListContainer {
+  text-align: center; /* Center align the content */
+}
+
+#topSongsList {
+  display: inline-block; /* Ensure div only takes required width */
+  text-align: left; /* Reset text alignment for the inner content */
+}
