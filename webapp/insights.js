@@ -119,7 +119,7 @@
   }
 
 
-//==============================================================================================================
+    //======================================================================================
 
   Plotly.d3.csv('data/genreevolution.csv', function (err, data) {
 
@@ -250,8 +250,6 @@
         steps: sliderSteps
         }]
     };
-    
-  
 
 
     Plotly.plot('myDiv', {
@@ -262,14 +260,16 @@
     });
     });
 
-    //=================================================================================================
 
-    fetch('data/song_genre_year.csv')
+    fetch('data/songs_details.csv')
     .then(response => response.text())
     .then(data => {
       // Process the CSV data
       processData1(data);
     });
+
+
+        //======================================================================================
 
 
     // Process the CSV data
@@ -289,8 +289,8 @@
           var values = rows[i].split(',');
           //console.log(values);
           // Assuming 'tempo', 'loudness', 'title', 'genre', and 'year' are columns in your CSV
-          var genre = values[2];  // Replace with the correct index for 'genre'
-          var year = parseInt(values[53]);  // Replace with the correct index for 'year'
+          var genre = values[0];  // Replace with the correct index for 'genre'
+          var year = parseInt(values[13]);  // Replace with the correct index for 'year'
           //console.log(year, genre);
 
           if (genre !== undefined) {
@@ -367,3 +367,100 @@
     // Update the plot with the new traces and layout
     Plotly.newPlot('stackedbar', traces, layout);
     }
+
+
+    //======================================================================================
+
+    function processData2(csvData, selectedArtist) {
+      const rows = csvData.split('\n');
+      const hotnessByYear = {};
+
+      for (let i = 1; i < rows.length; i++) {
+        const values = rows[i].split(',');
+        const artist = values[2];
+        const hotness = parseFloat(values[4]);
+        const year = parseInt(values[13]);
+
+        if (artist === selectedArtist && !isNaN(hotness) && !isNaN(year)) {
+          if (!hotnessByYear[year]) {
+            hotnessByYear[year] = [];
+          }
+          hotnessByYear[year].push(hotness);
+        }
+      }
+
+      // Calculate average hotness for each year
+      const averageHotnessByYear = Object.keys(hotnessByYear).map(year => {
+        const hotnessValues = hotnessByYear[year];
+        const averageHotness = hotnessValues.reduce((sum, val) => sum + val, 0) / hotnessValues.length;
+        return { year: parseInt(year), averageHotness };
+      });
+
+      return averageHotnessByYear;
+    }
+
+      // Fetch the CSV file
+      fetch('data/songs_details.csv')
+
+        .then(response => response.text())
+        .then(csvData => {
+          const artists = new Set();
+          const rows = csvData.split('\n');
+          for (let i = 1; i < rows.length; i++) {
+            const values = rows[i].split(',');
+            artists.add(values[2]);
+          }
+
+          const artistDropdown = document.getElementById('artistDropdown');
+          artists.forEach(artist => {
+            const option = document.createElement('option');
+            option.value = artist;
+            option.text = artist;
+            artistDropdown.appendChild(option);
+          });
+
+          artistDropdown.addEventListener('change', function () {
+            const selectedArtist = this.value;
+            const processedData = processData2(csvData, selectedArtist);
+
+            const trace = {
+              x: processedData.map(item => item.year),
+              y: processedData.map(item => item.averageHotness),
+              mode: 'lines+markers',
+              type: 'scatter',
+              name: selectedArtist,
+            };
+
+            const layout = {
+              title: `Average Artist Hotness for ${selectedArtist}`,
+              xaxis: { title: 'Year' },
+              yaxis: { title: 'Average Hotness', range: [0.0,1.0]  },
+
+            };
+
+            const data = [trace];
+            Plotly.newPlot('linechart', data, layout);
+          });
+
+          const firstArtist = artistDropdown.options[0].value;
+          const initialData = processData2(csvData, firstArtist);
+
+          const trace = {
+            x: initialData.map(item => item.year),
+            y: initialData.map(item => item.averageHotness),
+            mode: 'lines+markers',
+            type: 'scatter',
+            name: firstArtist,
+          };
+
+          const layout = {
+
+            title: `Average Artist Hotness for ${firstArtist}`,
+            xaxis: { title: 'Year'},
+            yaxis: { title: 'Average Hotness', range: [0.0,1.0] }
+
+          };
+
+          const data = [trace];
+          Plotly.newPlot('linechart', data, layout);
+        });
