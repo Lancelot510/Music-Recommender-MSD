@@ -1,3 +1,10 @@
+
+
+body, label, .slider-text, .slider-label, #slider-value, .home-text, .home-text1, .home-text2 {
+  font-family: "Inter", sans-serif;
+}
+
+
 .navigation-links-nav {
   flex: 0 0 auto;
   display: flex;
@@ -15,12 +22,6 @@
   margin-left: var(--dl-space-space-twounits);
   text-decoration: none;
 }
-
-
-
-
-
-
 
 
 .navigation-links-root-class-name15 {
@@ -144,4 +145,114 @@ float: left;
   .home-header {
     padding: var(--dl-space-space-unit);
   }
+}
+
+
+/* ===========================SLIDER=================================== */
+.slider-container {
+  width: 80%;
+  margin: auto;
+  text-align: center;
+}
+
+/* Styles for the slider text */
+.slider-text {
+  margin-bottom: 10px;
+  font-size: 18px;
+  color: #333;
+}
+
+/* Styles for the slider labels */
+.slider-label {
+  display: inline-block;
+  width: 30px;
+  font-size: 14px;
+  color: #666;
+}
+
+.slider-min {
+  text-align: left;
+}
+
+.slider-max {
+  text-align: right;
+}
+
+/* Styles for the slider input */
+.slider {
+  width: 70%;
+  margin: 0 15px;
+  height: 10px;
+  border-radius: 5px;
+  background: #ddd;
+  outline: none;
+  opacity: 0.7;
+  -webkit-transition: 0.2s;
+  transition: opacity 0.2s;
+}
+
+.slider:hover {
+  opacity: 1;
+}
+
+/* Styles for the slider value box */
+.slider-value-box {
+  margin-top: 10px;
+  background-color: #f0f0f0;
+  padding: 10px;
+  display: inline-block;
+  border-radius: 5px;
+}
+
+/* Styles for the slider value */
+#slider-value {
+  font-size: 16px;
+  color: #333;
+  font-weight: bold;
+}
+
+/* ===================================LABEL======================================================= */
+
+label {
+  display: block;
+  font-size: 18px;
+  margin-bottom: 10px;
+  color: #333;
+  font-weight: bold;
+}
+
+/* =========================================================================================== */
+
+.center-container {
+  text-align: center;
+  margin-top: 50px;
+}
+
+/* Style for the label */
+label {
+  display: block;
+  font-size: 18px;
+  margin-bottom: 10px;
+}
+
+/* Style for the select element */
+.select_user {
+  padding: 8px;
+  font-size: 16px;
+  width: 200px;
+}
+
+/* Style for the button */
+#search {
+  padding: 10px 20px;
+  font-size: 16px;
+  background-color: #4CAF50;
+  color: #fff;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+#search:hover {
+  background-color: #45a049;
 }
